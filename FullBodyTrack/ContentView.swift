@@ -6,10 +6,17 @@
 //
 
 import SwiftUI
+import ARKit
 
 struct ContentView: View {
+    
+    @EnvironmentObject var camSession: CameraSession
+    
     var body: some View {
-        Text("Hello, world!").padding()
+        CameraControls().environmentObject(camSession.delegate as! MarkerTracker)
+        Image(uiImage: camSession.img ?? UIImage())
+            .resizable()
+            .aspectRatio(contentMode: .fit)
     }
 }
 
