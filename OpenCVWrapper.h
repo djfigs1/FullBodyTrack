@@ -57,12 +57,37 @@ typedef struct CameraProperties {
 } CameraProperties;
 
 typedef struct DetectionParameters {
-    int adaptThresWinSizeMin;
+    double adaptiveThreshConstant;
     int adaptThresWinSizeMax;
+    int adaptThresWinSizeMin;
     int adaptThresWinSizeStep;
+    float aprilTagCriticalRad;
+    int aprilTagDeglitch;
+    float aprilTagMaxLineFitMse;
+    int aprilTagMaxNmaxima;
+    int aprilTagMinCLusterPixels;
+    int aprilTagMinWhiteBlackDiff;
+    float aprilTagQuadDecimate;
+    float aprliTagQuadSigma;
+    int cornerRefinementMaxIterations;
+    int cornerRefinementMethod;
+    double cornerRefinementMinAccuracy;
+    int cornerRefinementWinSize;
+    bool detectInvertedMarker;
+    double errorCorrectionRate;
+    int markerBorderBits;
+    double maxErroneousBitsInBorderRate;
     double minMarkerPerimRate;
     double maxMarkerPerimRate;
+    int minDistanceToBorder;
+    double minMarkerDistanceRate;
+    double minMarkerPerimeterRate;
+    double minOtsuStdDev;
+    double perspectiveRemoveIgnoredMarginPerCell;
+    int perspectiveRemovePixelPerCell;
+    double polygonalApproxAccuracyRate;
     bool cornerRefine;
+    
 } DetectionParameters;
 
 + (void) initalize;

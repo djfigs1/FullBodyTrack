@@ -63,7 +63,7 @@ static cv::Ptr<aruco::Dictionary> MARKER_DICTIONARY = aruco::getPredefinedDictio
 @end
 
 @implementation OpenCVWrapper
-static cv::Ptr<aruco::CharucoBoard> board = aruco::CharucoBoard::create(5, 7, 0.04f, 0.02f, MARKER_DICTIONARY);
+static cv::Ptr<aruco::CharucoBoard> board = aruco::CharucoBoard::create(5, 7, 0.035f, 0.0175f, MARKER_DICTIONARY);
 static cv::Ptr<aruco::DetectorParameters> parameters = aruco::DetectorParameters::create();
 static std::vector<std::vector<Point2f>> allCharucoCorners;
 static std::vector<std::vector<int>> allCharucoIds;
@@ -74,6 +74,8 @@ static cv::Mat cameraMatrix, distCoeffs;
 
 + (void) initialize {
     parameters.get()->cornerRefinementMethod = aruco::CORNER_REFINE_SUBPIX;
+    //parameters.get()->adaptiveThreshWinSizeMin = 13;
+    //parameters.get()->adaptiveThreshWinSizeMax = 13;
 }
 
 + (void) setWinSize: (int) winSize {
@@ -114,8 +116,6 @@ static cv::Mat cameraMatrix, distCoeffs;
     //double camMat[9] = {properties.fx,0,properties.cx,0,properties.fy,properties.cy,0,0,1};
     cameraMatrix = (Mat1d(3,3) << properties.fx, 0, properties.cx, 0, properties.fy, properties.cy, 0, 0, 1);
     distCoeffs = (Mat1d(1,5) << properties.distCoeffs[0], properties.distCoeffs[1], properties.distCoeffs[2], properties.distCoeffs[3], properties.distCoeffs[4]);
-    printf("is cam empty: %d\n", cameraMatrix.empty());
-    printf("is diff empty: %d\n", distCoeffs.empty());
 }
 
 + (void) setCameraRefine: (bool) refine {
@@ -149,6 +149,7 @@ static cv::Mat cameraMatrix, distCoeffs;
     Mat rgbMat = [OpenCVWrapper _rgbMatFrom:buffer];
     std::vector<int> ids;
     std::vector<std::vector<Point2f>> corners;
+    
     aruco::detectMarkers(rgbMat, MARKER_DICTIONARY, corners, ids, parameters);
     TrackerResult* result = [[TrackerResult alloc] init];
     NSMutableArray<TrackerLocation*>* locations = [[NSMutableArray alloc] init];
@@ -169,7 +170,7 @@ static cv::Mat cameraMatrix, distCoeffs;
                     location.visible = true;
                     location.rvec = {rvec[0], rvec[1], rvec[2]};
                     location.tvec = {tvec[0], tvec[1], tvec[2]};
-                    aruco::drawAxis(rgbMat, cameraMatrix, distCoeffs, rvec, tvec, 0.1f);
+                    aruco::drawAxis(rgbMat, cameraMatrix, distCoeffs, rvec, tvec, 0.05);
                 }
                 
             }
@@ -247,11 +248,25 @@ static cv::Mat cameraMatrix, distCoeffs;
     int width = (int) CVPixelBufferGetWidth(buffer);
     int height = (int) CVPixelBufferGetHeight(buffer);
     int bytesPerRow = (int) CVPixelBufferGetBytesPerRow(buffer);
+    
+    Mat imgMat(height, width, CV_8UC4, baseaddress, bytesPerRow);
+    Mat rgbMat;
+    cvtColor(imgMat, rgbMat, COLOR_BGRA2RGB);
+    //resize(rgbMat, rgbMat, cv::Size(), 0.25, 0.25, INTER_CUBIC);
+    CVPixelBufferUnlockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
+    return rgbMat;
+}
+
+static void cornersFromBuffer(std::vector<int> &ids, std::vector<std::vector<Point2f>> &corners, CVImageBufferRef buffer) {
+    CVPixelBufferLockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
+    void *baseaddress = CVPixelBufferGetBaseAddress(buffer);
+    int width = (int) CVPixelBufferGetWidth(buffer);
+    int height = (int) CVPixelBufferGetHeight(buffer);
+    int bytesPerRow = (int) CVPixelBufferGetBytesPerRow(buffer);
     Mat imgMat(height, width, CV_8UC4, baseaddress, bytesPerRow);
     Mat rgbMat;
     cvtColor(imgMat, rgbMat, COLOR_BGRA2RGB);
     CVPixelBufferUnlockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
-    return rgbMat;
 }
 
 @end

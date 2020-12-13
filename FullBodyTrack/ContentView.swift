@@ -13,10 +13,25 @@ struct ContentView: View {
     @EnvironmentObject var camSession: CameraSession
     
     var body: some View {
-        CameraControls().environmentObject(camSession.delegate as! MarkerTracker)
-        Image(uiImage: camSession.img ?? UIImage())
-            .resizable()
-            .aspectRatio(contentMode: .fit)
+        TabView {
+            CameraView()
+                .tabItem {
+                    Image(systemName: "camera.viewfinder")
+                    Text("Camera")
+                }
+            
+            TrackersView()
+                .tabItem {
+                    Image(systemName: "perspective")
+                    Text("Trackers")
+                }
+            
+            SettingsView()
+                .tabItem {
+                    Image(systemName: "gear")
+                    Text("Settings")
+                }
+        }
     }
 }
 

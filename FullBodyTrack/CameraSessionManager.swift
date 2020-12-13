@@ -12,7 +12,11 @@ import UIKit
 import VideoToolbox
 
 protocol CameraSessionDelegate: AnyObject {
-    func cameraSession(_ cameraSession: CameraSession, didCaptureBuffer buffer: CVImageBuffer)
+    func cameraSession(_ cameraSession: CameraSession, didCaptureBuffer buffer: CVImageBuffer, withIntrinsics: matrix_float3x3?)
+}
+
+enum VideoResolution {
+    
 }
 
 /// - Tag: VideoCapture
@@ -26,6 +30,7 @@ class CameraSession: NSObject, ObservableObject {
     
     @Published var capturing = false
     @Published var img: UIImage? = nil
+    var viewfinder: CameraViewfinder?
 
     /// The delegate to receive the captured frames.
     weak var delegate: CameraSessionDelegate?
@@ -36,6 +41,8 @@ class CameraSession: NSObject, ObservableObject {
     /// A capture output that records video and provides access to video frames. Captured frames are passed to the
     /// delegate via the `captureOutput()` method.
     let videoOutput = AVCaptureVideoDataOutput()
+    
+    var capturePreset:AVCaptureSession.Preset = .hd1920x1080
 
     /// The current camera's position.
     private(set) var cameraPostion = AVCaptureDevice.Position.back
@@ -62,6 +69,12 @@ class CameraSession: NSObject, ObservableObject {
             }
         }
     }
+    
+    public func updateViewfinder(img: UIImage) {
+        if let viewfinder = viewfinder {
+            viewfinder.updateWithImg(img: img)
+        }
+    }
 
     private func setUpAVCapture() throws {
         if captureSession.isRunning {
@@ -70,10 +83,9 @@ class CameraSession: NSObject, ObservableObject {
 
         captureSession.beginConfiguration()
         
-        captureSession.sessionPreset = .hd1280x720
-
+        captureSession.sessionPreset = self.capturePreset
+        
         try setCaptureSessionInput()
-
         try setCaptureSessionOutput()
 
         captureSession.commitConfiguration()
@@ -90,11 +102,32 @@ class CameraSession: NSObject, ObservableObject {
                 throw VideoCaptureError.invalidInput
         }
         
-        print (captureDevice.activeFormat)
-        try! captureDevice.lockForConfiguration()
-        captureDevice.exposureMode = .custom
-        captureDevice.setExposureModeCustom(duration: CMTimeMake(value: 1, timescale: 150), iso: 200, completionHandler: nil)
-        captureDevice.unlockForConfiguration()
+        
+        
+        var bestFormat: AVCaptureDevice.Format?
+        var bestFrameRateRange: AVFrameRateRange?
+        for format in captureDevice.formats {
+            for range in format.videoSupportedFrameRateRanges {
+                if range.maxFrameRate > bestFrameRateRange?.maxFrameRate ?? 0 {
+                    bestFormat = format
+                    bestFrameRateRange = range
+                }
+            }
+        }
+        
+        if let bestFormat = bestFormat, let bestFrameRateRange = bestFrameRateRange {
+            do {
+                try! captureDevice.lockForConfiguration()
+                captureDevice.exposureMode = .custom
+                captureDevice.setExposureModeCustom(duration: CMTimeMake(value: 1, timescale: 1000), iso: 500, completionHandler: nil)
+                //captureDevice.activeFormat = bestFormat
+                //captureDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration
+                //captureDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration
+                captureDevice.unlockForConfiguration()
+                
+                print (captureDevice.activeVideoMinFrameDuration, captureDevice.activeVideoMaxFrameDuration)
+            }
+        }
 
         // Remove any existing inputs.
         captureSession.inputs.forEach { input in
@@ -142,17 +175,8 @@ class CameraSession: NSObject, ObservableObject {
         // Update the video orientation
         if let connection = videoOutput.connection(with: .video),
             connection.isVideoOrientationSupported {
-            connection.videoOrientation =
-                AVCaptureVideoOrientation(rawValue: UIDevice.current.orientation.rawValue)!
-            connection.isVideoMirrored = cameraPostion == .front
-
-            // Inverse the landscape orientation to force the image in the upward
-            // orientation.
-            if connection.videoOrientation == .landscapeLeft {
-                connection.videoOrientation = .landscapeRight
-            } else if connection.videoOrientation == .landscapeRight {
-                connection.videoOrientation = .landscapeLeft
-            }
+            connection.videoOrientation = .portrait
+            connection.isCameraIntrinsicMatrixDeliveryEnabled = false
         }
     }
 
@@ -216,11 +240,21 @@ extension CameraSession: AVCaptureVideoDataOutputSampleBufferDelegate {
                               didOutput sampleBuffer: CMSampleBuffer,
                               from connection: AVCaptureConnection) {
         guard let delegate = delegate else { return }
+        
+        var matrix: matrix_float3x3?
+        if let camData = CMGetAttachment(sampleBuffer, key: kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix, attachmentModeOut: nil) as? Data {
 
-        if let pixelBuffer = sampleBuffer.imageBuffer {
-            DispatchQueue.main.sync {
-                delegate.cameraSession(self, didCaptureBuffer: pixelBuffer)
+            matrix = camData.withUnsafeBytes() {
+                $0.pointee
             }
         }
+
+        if let pixelBuffer = sampleBuffer.imageBuffer {
+            sessionQueue.async {
+                delegate.cameraSession(self, didCaptureBuffer: pixelBuffer, withIntrinsics: matrix)
+            }
+        }
+        
+        
     }
 }

@@ -12,8 +12,15 @@
 		B0055D7C25197784006D036A /* big_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B0055D7B25197784006D036A /* big_tracker.json */; };
 		B04495DD24F61B4E0039438A /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B04495DC24F61B4E0039438A /* opencv2.framework */; };
 		B071E97C24FF1FFD0000F187 /* SteamVRConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071E97B24FF1FDE0000F187 /* SteamVRConnectionManager.swift */; };
+		B074C7652581C6A5002DE91B /* cube_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B074C7642581C6A5002DE91B /* cube_tracker.json */; };
 		B09384172501509C001F91D5 /* calib_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B09384162501509C001F91D5 /* calib_tracker.json */; };
 		B09384192506BAE3001F91D5 /* cap_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B09384182506BAE3001F91D5 /* cap_tracker.json */; };
+		B0AE2DB3258659A3006225D6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AE2DB2258659A3006225D6 /* CameraView.swift */; };
+		B0AE2DB525865B7A006225D6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AE2DB425865B7A006225D6 /* SettingsView.swift */; };
+		B0AE2DBB25866E17006225D6 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AE2DBA25866E17006225D6 /* FileManager.swift */; };
+		B0AE2DBF258671C0006225D6 /* TrackersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AE2DBE258671C0006225D6 /* TrackersView.swift */; };
+		B0AE2DC125868FE2006225D6 /* CameraViewfinder.xib in Resources */ = {isa = PBXBuildFile; fileRef = B0AE2DC025868FE2006225D6 /* CameraViewfinder.xib */; };
+		B0AE2DC525869192006225D6 /* CameraViewfinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AE2DC425869192006225D6 /* CameraViewfinder.swift */; };
 		B0B5FCFD24DB102500843691 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B5FCFC24DB102500843691 /* AppDelegate.swift */; };
 		B0B5FCFF24DB102500843691 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B5FCFE24DB102500843691 /* SceneDelegate.swift */; };
 		B0B5FD0124DB102500843691 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B5FD0024DB102500843691 /* ContentView.swift */; };
@@ -21,12 +28,10 @@
 		B0B5FD0624DB102700843691 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B0B5FD0524DB102700843691 /* Preview Assets.xcassets */; };
 		B0B5FD0924DB102700843691 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0B5FD0724DB102700843691 /* LaunchScreen.storyboard */; };
 		B0B5FD1324DB110700843691 /* OpenCVWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = B0B5FD1224DB110700843691 /* OpenCVWrapper.mm */; };
-		B0B8461324F7614800105537 /* ArucoTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B8461224F7614800105537 /* ArucoTracker.swift */; };
 		B0B8461724F7EC7E00105537 /* calib.json in Resources */ = {isa = PBXBuildFile; fileRef = B0B8461624F7EC7E00105537 /* calib.json */; };
 		B0B8461B24F8032D00105537 /* ring_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B0B8461A24F8032D00105537 /* ring_tracker.json */; };
 		B0D5748D24DB65240057CDE1 /* CameraSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D5748C24DB65240057CDE1 /* CameraSessionManager.swift */; };
 		B0D5748F24DB6F0A0057CDE1 /* ArucoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D5748E24DB6F0A0057CDE1 /* ArucoManager.swift */; };
-		B0E2CEDA2569D40A005C11E3 /* ARKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0E2CED92569D40A005C11E3 /* ARKitManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,8 +55,15 @@
 		B0055D7B25197784006D036A /* big_tracker.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = big_tracker.json; sourceTree = "<group>"; };
 		B04495DC24F61B4E0039438A /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		B071E97B24FF1FDE0000F187 /* SteamVRConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteamVRConnectionManager.swift; sourceTree = "<group>"; };
+		B074C7642581C6A5002DE91B /* cube_tracker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cube_tracker.json; sourceTree = "<group>"; };
 		B09384162501509C001F91D5 /* calib_tracker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = calib_tracker.json; sourceTree = "<group>"; };
 		B09384182506BAE3001F91D5 /* cap_tracker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cap_tracker.json; sourceTree = "<group>"; };
+		B0AE2DB2258659A3006225D6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		B0AE2DB425865B7A006225D6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B0AE2DBA25866E17006225D6 /* FileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
+		B0AE2DBE258671C0006225D6 /* TrackersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersView.swift; sourceTree = "<group>"; };
+		B0AE2DC025868FE2006225D6 /* CameraViewfinder.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CameraViewfinder.xib; sourceTree = "<group>"; };
+		B0AE2DC425869192006225D6 /* CameraViewfinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewfinder.swift; sourceTree = "<group>"; };
 		B0B5FCF924DB102500843691 /* FullBodyTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FullBodyTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0B5FCFC24DB102500843691 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B0B5FCFE24DB102500843691 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -64,12 +76,10 @@
 		B0B5FD1124DB110700843691 /* OpenCVWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVWrapper.h; sourceTree = "<group>"; };
 		B0B5FD1224DB110700843691 /* OpenCVWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVWrapper.mm; sourceTree = "<group>"; };
 		B0B5FD1424DB14F500843691 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
-		B0B8461224F7614800105537 /* ArucoTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArucoTracker.swift; sourceTree = "<group>"; };
 		B0B8461624F7EC7E00105537 /* calib.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = calib.json; sourceTree = "<group>"; };
 		B0B8461A24F8032D00105537 /* ring_tracker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ring_tracker.json; sourceTree = "<group>"; };
 		B0D5748C24DB65240057CDE1 /* CameraSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionManager.swift; sourceTree = "<group>"; };
 		B0D5748E24DB6F0A0057CDE1 /* ArucoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArucoManager.swift; sourceTree = "<group>"; };
-		B0E2CED92569D40A005C11E3 /* ARKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARKitManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +113,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B0AE2DB125865993006225D6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B0AE2DB2258659A3006225D6 /* CameraView.swift */,
+				B0AE2DB425865B7A006225D6 /* SettingsView.swift */,
+				B0AE2DBE258671C0006225D6 /* TrackersView.swift */,
+				B0AE2DC025868FE2006225D6 /* CameraViewfinder.xib */,
+				B0AE2DC425869192006225D6 /* CameraViewfinder.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		B0B5FCF024DB102500843691 = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +152,7 @@
 		B0B5FCFB24DB102500843691 /* FullBodyTrack */ = {
 			isa = PBXGroup;
 			children = (
+				B0AE2DB125865993006225D6 /* Views */,
 				B0B5FCFC24DB102500843691 /* AppDelegate.swift */,
 				B0B5FCFE24DB102500843691 /* SceneDelegate.swift */,
 				B0B5FD0024DB102500843691 /* ContentView.swift */,
@@ -141,8 +164,7 @@
 				B0D5748C24DB65240057CDE1 /* CameraSessionManager.swift */,
 				B0D5748E24DB6F0A0057CDE1 /* ArucoManager.swift */,
 				B071E97B24FF1FDE0000F187 /* SteamVRConnectionManager.swift */,
-				B0B8461224F7614800105537 /* ArucoTracker.swift */,
-				B0E2CED92569D40A005C11E3 /* ARKitManager.swift */,
+				B0AE2DBA25866E17006225D6 /* FileManager.swift */,
 			);
 			path = FullBodyTrack;
 			sourceTree = "<group>";
@@ -158,6 +180,7 @@
 		B0B8461424F7EC6700105537 /* Trackers */ = {
 			isa = PBXGroup;
 			children = (
+				B074C7642581C6A5002DE91B /* cube_tracker.json */,
 				B09384182506BAE3001F91D5 /* cap_tracker.json */,
 				B09384162501509C001F91D5 /* calib_tracker.json */,
 				B0B8461A24F8032D00105537 /* ring_tracker.json */,
@@ -241,7 +264,9 @@
 				B0B5FD0624DB102700843691 /* Preview Assets.xcassets in Resources */,
 				B0055D7C25197784006D036A /* big_tracker.json in Resources */,
 				B09384172501509C001F91D5 /* calib_tracker.json in Resources */,
+				B0AE2DC125868FE2006225D6 /* CameraViewfinder.xib in Resources */,
 				B0B5FD0324DB102700843691 /* Assets.xcassets in Resources */,
+				B074C7652581C6A5002DE91B /* cube_tracker.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,13 +305,16 @@
 				B0B5FCFD24DB102500843691 /* AppDelegate.swift in Sources */,
 				B0B5FCFF24DB102500843691 /* SceneDelegate.swift in Sources */,
 				B071E97C24FF1FFD0000F187 /* SteamVRConnectionManager.swift in Sources */,
-				B0E2CEDA2569D40A005C11E3 /* ARKitManager.swift in Sources */,
+				B0AE2DB3258659A3006225D6 /* CameraView.swift in Sources */,
 				B0B5FD1324DB110700843691 /* OpenCVWrapper.mm in Sources */,
-				B0B8461324F7614800105537 /* ArucoTracker.swift in Sources */,
+				B0AE2DB525865B7A006225D6 /* SettingsView.swift in Sources */,
 				B0B5FD0124DB102500843691 /* ContentView.swift in Sources */,
+				B0AE2DBF258671C0006225D6 /* TrackersView.swift in Sources */,
+				B0AE2DBB25866E17006225D6 /* FileManager.swift in Sources */,
 				B004B5ED24F70DA900B71643 /* CameraControls.swift in Sources */,
 				B0D5748F24DB6F0A0057CDE1 /* ArucoManager.swift in Sources */,
 				B0D5748D24DB65240057CDE1 /* CameraSessionManager.swift in Sources */,
+				B0AE2DC525869192006225D6 /* CameraViewfinder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

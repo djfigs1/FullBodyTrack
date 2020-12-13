@@ -68,37 +68,56 @@ class MarkerTracker: CameraSessionDelegate, ObservableObject {
     public var delegate: MarkerTrackerDelegate?
     private var fps_tracker:[(CFAbsoluteTime, CFAbsoluteTime)] = []
     
-    func cameraSession(_ cameraSession: CameraSession, didCaptureBuffer buffer: CVImageBuffer) {
+    func cameraSession(_ cameraSession: CameraSession, didCaptureBuffer buffer: CVImageBuffer, withIntrinsics intrinsics: matrix_float3x3?) {
+        
+        if let intrinsics = intrinsics {
+            let fx = intrinsics[0][0]
+            let fy = intrinsics[1][1]
+            let cx = intrinsics[0][2]
+            let cy = intrinsics[1][2]
+            var properties = CameraProperties()
+            properties.cx = Double(cx)
+            properties.cy = Double(cy)
+            properties.fx = Double(fx)
+            properties.fy = Double(fy)
+            //properties.distCoeffs = (0.28223140224073295,-1.2092660956873478,-0.0019283605685783557,0.0022946695257412527,1.5125784871553691)
+            OpenCVWrapper.setCameraPropeties(properties)
+        }
+        
         switch (self.currentTrackingMode) {
             case .DISABLED:
                 return
             case .CALIBRATE:
-                let output = OpenCVWrapper.findChArUcoBoard(buffer, saveResult: captureBoardPose)
+                var output: ChArUcoBoardResult
                 if (captureBoardPose) {
+                    output = OpenCVWrapper.findChArUcoBoard(buffer, saveResult: true)
                     captureBoardPose = !output.boardFound; // only stop looking for a board if its found
                     print ("boards: \(OpenCVWrapper.boardsCaptured())")
+                } else {
+                    output = OpenCVWrapper.findChArUcoBoard(buffer, saveResult: false)
                 }
                 
                 DispatchQueue.main.async {
-                    cameraSession.img = output.outputImage
                     self.boardPoses = Int(OpenCVWrapper.boardsCaptured())
+                    cameraSession.img = output.outputImage
                 }
+                
                 break
             case .MARKERS:
                 let output = OpenCVWrapper.getMarkersFrom(buffer)
-                DispatchQueue.main.async {
-                    cameraSession.img = output.outputImage
-                }
+                cameraSession.updateViewfinder(img: output.outputImage)
                 break
             case .TRACKERS:
                 let start = CFAbsoluteTimeGetCurrent()
                 let output = OpenCVWrapper.getTrackersFrom(buffer);
                 let diff = CFAbsoluteTimeGetCurrent() - start
                 self.fps_tracker.append((start, diff))
-                self.fps = self.calculateFPS()
+                cameraSession.updateViewfinder(img: output.outputImage)
+                
                 DispatchQueue.main.async {
-                    self.delegate?.tracker(self, trackersWereUpdated: output.trackers)
-                    cameraSession.img = output.outputImage
+                    self.fps = self.calculateFPS()
+                    //self.delegate?.tracker(self, trackersWereUpdated: output.trackers)
+                    //cameraSession.img = output.outputImage
                 }
                 break
         }
@@ -126,19 +145,32 @@ class MarkerTracker: CameraSessionDelegate, ObservableObject {
     
     func calibrateStoredBoards() {
         let properties = OpenCVWrapper.calibrateStoredBoards();
-        let codable = cameraPropertiesToCodable(properties: properties)
-        let encoder = JSONEncoder()
-        let data = try! encoder.encode(codable)
-        print (String(data: data, encoding: .utf8)!)
+        print (properties)
+        saveCameraCalibration(properties)
     }
     
     func setCameraProperties(_ codable_props: CodableCameraProperties) {
         let props = codableToCameraProperties(codable: codable_props)
-        print (props)
         OpenCVWrapper.setCameraPropeties(props)
     }
     
     func captureBoard() {
         captureBoardPose = true;
     }
+}
+
+struct Tracker: Codable {
+    var name: String
+    var markers: Dictionary<Int, [[Float]]>
+}
+
+func addTracker(_ tracker: Tracker) {
+    let trackerobj = TrackerObj()
+    trackerobj.serial = tracker.name
+    for (marker, corners) in tracker.markers {
+        trackerobj.markers[marker as NSNumber] = corners as [[NSNumber]]
+    }
+    
+    OpenCVWrapper.addTracker(trackerobj)
+    
 }
