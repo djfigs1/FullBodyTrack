@@ -121,6 +121,8 @@ class MarkerTracker: CameraSessionDelegate, ObservableObject {
                 }
                 break
         }
+        
+        cameraSession.canProcessNewFrame = true
     }
     
     func calculateFPS() -> Double {
@@ -155,13 +157,18 @@ class MarkerTracker: CameraSessionDelegate, ObservableObject {
     }
     
     func captureBoard() {
-        captureBoardPose = true;
+        captureBoardPose = true
     }
 }
 
-struct Tracker: Codable {
+struct Tracker: Hashable, Codable {
     var name: String
     var markers: Dictionary<Int, [[Float]]>
+}
+
+struct UniqueTracker: Identifiable {
+    var id: String
+    var tracker: Tracker
 }
 
 func addTracker(_ tracker: Tracker) {

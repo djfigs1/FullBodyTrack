@@ -61,14 +61,6 @@ typedef struct DetectionParameters {
     int adaptThresWinSizeMax;
     int adaptThresWinSizeMin;
     int adaptThresWinSizeStep;
-    float aprilTagCriticalRad;
-    int aprilTagDeglitch;
-    float aprilTagMaxLineFitMse;
-    int aprilTagMaxNmaxima;
-    int aprilTagMinCLusterPixels;
-    int aprilTagMinWhiteBlackDiff;
-    float aprilTagQuadDecimate;
-    float aprliTagQuadSigma;
     int cornerRefinementMaxIterations;
     int cornerRefinementMethod;
     double cornerRefinementMinAccuracy;

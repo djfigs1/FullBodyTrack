@@ -29,9 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        // Get Trackers
-        getTrackers()
-        
         // Override point for customization after application launch.
         let decoder = JSONDecoder()
         //let cameraProperties = try! decoder.decode(CodableCameraProperties.self, from: Data(cameraCalibString.utf8))
@@ -56,19 +53,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         SteamVRConnectionManager.shared.connect(host: "192.168.1.22", port: 8082)
-        //markerTracker.setCameraProperties(cameraProperties)
         self.cameraSession.delegate = markerTracker
         markerTracker.delegate = SteamVRConnectionManager.shared
         SteamVRConnectionManager.shared.advertiseTrackers()
-        cameraSession.setUpAVCapture() { (error) in
-            guard let error = error else {
-                print ("AVCapture initialized!")
-                self.cameraSession.startCapturing()
-                UIApplication.shared.isIdleTimerDisabled = true
-                return
-            }
-            print ("Error initalizing AVCapture: \(error.localizedDescription)")
-        }
         
         print (OpenCVWrapper.openCVVersionString())
         return true

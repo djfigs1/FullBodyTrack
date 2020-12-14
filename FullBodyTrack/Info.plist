@@ -53,6 +53,10 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is used to track the markers</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

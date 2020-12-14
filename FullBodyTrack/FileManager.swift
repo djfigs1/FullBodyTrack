@@ -61,12 +61,12 @@ func getCameraCalibrationProfiles() -> [CameraProperties]? {
     }
 }
 
-func getTrackers() -> [Tracker]? {
+func getTrackers() -> [UniqueTracker]? {
     let filesURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     let trackersURL = filesURL.appendingPathComponent(TRACKERS_DIRECTORY)
     do {
         let trackerFiles = try FileManager.default.contentsOfDirectory(at: trackersURL, includingPropertiesForKeys: nil, options: [])
-        var trackers: [Tracker] = []
+        var trackers: [UniqueTracker] = []
         let decoder = JSONDecoder()
         for file in trackerFiles {
             var isDirectory = ObjCBool(false)
@@ -74,9 +74,8 @@ func getTrackers() -> [Tracker]? {
                 if (!isDirectory.boolValue) {
                     if (file.pathExtension == "json") {
                         if let tracker = try? decoder.decode(Tracker.self, from: Data(contentsOf: file)) {
-                                print ("found tracker")
-                                print (tracker)
-                                trackers.append(tracker)
+                            let uniqueTracker = UniqueTracker(id: file.lastPathComponent, tracker: tracker)
+                            trackers.append(uniqueTracker)
                         }
                     }
                 }

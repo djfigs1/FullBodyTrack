@@ -74,8 +74,8 @@ static cv::Mat cameraMatrix, distCoeffs;
 
 + (void) initialize {
     parameters.get()->cornerRefinementMethod = aruco::CORNER_REFINE_SUBPIX;
-    //parameters.get()->adaptiveThreshWinSizeMin = 13;
-    //parameters.get()->adaptiveThreshWinSizeMax = 13;
+    //parameters.get()->adaptiveThreshWinSizeMin = 23;
+    //parameters.get()->adaptiveThreshWinSizeMax = 23;
 }
 
 + (void) setWinSize: (int) winSize {
@@ -147,10 +147,15 @@ static cv::Mat cameraMatrix, distCoeffs;
 
 + (TrackerResult*) getTrackersFromBuffer: (CVImageBufferRef) buffer  {
     Mat rgbMat = [OpenCVWrapper _rgbMatFrom:buffer];
+    Mat grayMat;
+    cv::cvtColor(rgbMat, grayMat, cv::COLOR_BGRA2GRAY);
+    Mat thresMat;
+    cv::threshold(grayMat, thresMat, 40, 255, cv::THRESH_BINARY);
+    
     std::vector<int> ids;
     std::vector<std::vector<Point2f>> corners;
     
-    aruco::detectMarkers(rgbMat, MARKER_DICTIONARY, corners, ids, parameters);
+    aruco::detectMarkers(thresMat, MARKER_DICTIONARY, corners, ids, parameters);
     TrackerResult* result = [[TrackerResult alloc] init];
     NSMutableArray<TrackerLocation*>* locations = [[NSMutableArray alloc] init];
     auto trackers = [OpenCVWrapper trackerObjects];
@@ -255,18 +260,6 @@ static cv::Mat cameraMatrix, distCoeffs;
     //resize(rgbMat, rgbMat, cv::Size(), 0.25, 0.25, INTER_CUBIC);
     CVPixelBufferUnlockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
     return rgbMat;
-}
-
-static void cornersFromBuffer(std::vector<int> &ids, std::vector<std::vector<Point2f>> &corners, CVImageBufferRef buffer) {
-    CVPixelBufferLockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
-    void *baseaddress = CVPixelBufferGetBaseAddress(buffer);
-    int width = (int) CVPixelBufferGetWidth(buffer);
-    int height = (int) CVPixelBufferGetHeight(buffer);
-    int bytesPerRow = (int) CVPixelBufferGetBytesPerRow(buffer);
-    Mat imgMat(height, width, CV_8UC4, baseaddress, bytesPerRow);
-    Mat rgbMat;
-    cvtColor(imgMat, rgbMat, COLOR_BGRA2RGB);
-    CVPixelBufferUnlockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
 }
 
 @end

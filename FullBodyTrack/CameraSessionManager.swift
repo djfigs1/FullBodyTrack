@@ -50,6 +50,9 @@ class CameraSession: NSObject, ObservableObject {
     /// The dispatch queue responsible for processing camera set up and frame capture.
     private let sessionQueue = DispatchQueue(
         label: "com.figsware.camera-processing-thread")
+    
+    
+    var canProcessNewFrame = true
 
     /// Asynchronously sets up the capture session.
     ///
@@ -119,7 +122,7 @@ class CameraSession: NSObject, ObservableObject {
             do {
                 try! captureDevice.lockForConfiguration()
                 captureDevice.exposureMode = .custom
-                captureDevice.setExposureModeCustom(duration: CMTimeMake(value: 1, timescale: 1000), iso: 500, completionHandler: nil)
+                captureDevice.setExposureModeCustom(duration: CMTimeMake(value: 1, timescale: 1000), iso: 200, completionHandler: nil)
                 //captureDevice.activeFormat = bestFormat
                 //captureDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration
                 //captureDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration
@@ -240,18 +243,13 @@ extension CameraSession: AVCaptureVideoDataOutputSampleBufferDelegate {
                               didOutput sampleBuffer: CMSampleBuffer,
                               from connection: AVCaptureConnection) {
         guard let delegate = delegate else { return }
-        
-        var matrix: matrix_float3x3?
-        if let camData = CMGetAttachment(sampleBuffer, key: kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix, attachmentModeOut: nil) as? Data {
-
-            matrix = camData.withUnsafeBytes() {
-                $0.pointee
-            }
-        }
 
         if let pixelBuffer = sampleBuffer.imageBuffer {
-            sessionQueue.async {
-                delegate.cameraSession(self, didCaptureBuffer: pixelBuffer, withIntrinsics: matrix)
+            if (self.canProcessNewFrame) {
+                self.canProcessNewFrame = false
+                delegate.cameraSession(self, didCaptureBuffer: pixelBuffer, withIntrinsics: nil)
+            } else {
+                print ("can't process new frame")
             }
         }
         

@@ -8,13 +8,30 @@
 import SwiftUI
 
 struct TrackersView: View {
+    
+    var trackers: [UniqueTracker] = getTrackers() ?? []
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List(trackers) { tracker in
+            TrackerRow(tracker: tracker.tracker)
+        }
+    }
+}
+
+struct TrackerRow: View {
+    
+    var tracker: Tracker
+    
+    var body: some View {
+        VStack {
+            Text(tracker.name).bold()
+            Text("\(tracker.markers.count) markers")
+        }
     }
 }
 
 struct TrackersView_Previews: PreviewProvider {
     static var previews: some View {
-        TrackersView()
+        TrackersView(trackers: [])
     }
 }
