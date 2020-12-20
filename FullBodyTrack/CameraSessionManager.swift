@@ -122,7 +122,7 @@ class CameraSession: NSObject, ObservableObject {
             do {
                 try! captureDevice.lockForConfiguration()
                 captureDevice.exposureMode = .custom
-                captureDevice.setExposureModeCustom(duration: CMTimeMake(value: 1, timescale: 1000), iso: 200, completionHandler: nil)
+                captureDevice.setExposureModeCustom(duration: CMTimeMake(value: 1, timescale: 500), iso: 200, completionHandler: nil)
                 //captureDevice.activeFormat = bestFormat
                 //captureDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration
                 //captureDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration

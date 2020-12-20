@@ -18,6 +18,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Initialize OpenCV
         OpenCVWrapper.initialize()
         
+        if let marker_dict = Bundle.main.path(forResource: "opencv_aruco_markers", ofType: "aruco") {
+            print ("Found marker dict: ", marker_dict)
+            if let mdata = FileManager.default.contents(atPath: marker_dict) {
+                if let dict = String(data: mdata, encoding: .utf8) {
+                    print ("Did find dict, setting...")
+                    OpenCVWrapper.setDictionaryFrom(dict)
+                }
+                
+            }
+        }
+        
         // Initialize directories
         createDirectories()
         

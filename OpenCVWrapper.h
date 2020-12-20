@@ -56,32 +56,6 @@ typedef struct CameraProperties {
     double distCoeffs[5];
 } CameraProperties;
 
-typedef struct DetectionParameters {
-    double adaptiveThreshConstant;
-    int adaptThresWinSizeMax;
-    int adaptThresWinSizeMin;
-    int adaptThresWinSizeStep;
-    int cornerRefinementMaxIterations;
-    int cornerRefinementMethod;
-    double cornerRefinementMinAccuracy;
-    int cornerRefinementWinSize;
-    bool detectInvertedMarker;
-    double errorCorrectionRate;
-    int markerBorderBits;
-    double maxErroneousBitsInBorderRate;
-    double minMarkerPerimRate;
-    double maxMarkerPerimRate;
-    int minDistanceToBorder;
-    double minMarkerDistanceRate;
-    double minMarkerPerimeterRate;
-    double minOtsuStdDev;
-    double perspectiveRemoveIgnoredMarginPerCell;
-    int perspectiveRemovePixelPerCell;
-    double polygonalApproxAccuracyRate;
-    bool cornerRefine;
-    
-} DetectionParameters;
-
 + (void) initalize;
 + (void) setWinSize: (int) winSize;
 + (NSMutableArray<TrackerObj*>*) trackerObjects;
@@ -91,6 +65,7 @@ typedef struct DetectionParameters {
 + (NSArray<TrackerObj*>*) getAllTrackers;
 + (NSString *) openCVVersionString;
 + (int) boardsCaptured;
++ (void) setDictionaryFromString: (NSString *) dictionary;
 
 + (CVImgOutput*) getMarkersFromBuffer: (CVImageBufferRef) buffer;
 + (TrackerResult*) getTrackersFromBuffer: (CVImageBufferRef) buffer;

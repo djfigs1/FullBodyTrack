@@ -96,10 +96,10 @@ class MarkerTracker: CameraSessionDelegate, ObservableObject {
                 } else {
                     output = OpenCVWrapper.findChArUcoBoard(buffer, saveResult: false)
                 }
+                cameraSession.updateViewfinder(img: output.outputImage)
                 
                 DispatchQueue.main.async {
                     self.boardPoses = Int(OpenCVWrapper.boardsCaptured())
-                    cameraSession.img = output.outputImage
                 }
                 
                 break
