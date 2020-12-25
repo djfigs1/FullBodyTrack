@@ -74,12 +74,15 @@ func getTrackers() -> [UniqueTracker]? {
                 if (!isDirectory.boolValue) {
                     if (file.pathExtension == "json") {
                         if let tracker = try? decoder.decode(Tracker.self, from: Data(contentsOf: file)) {
-                            let uniqueTracker = UniqueTracker(id: file.lastPathComponent, tracker: tracker)
+                            let uniqueTracker = UniqueTracker(id: file.lastPathComponent, tracker: tracker, active: false)
                             trackers.append(uniqueTracker)
                         }
                     }
                 }
             }
+        }
+        for tracker in trackers {
+            print (tracker.id)
         }
         return trackers
     } catch {

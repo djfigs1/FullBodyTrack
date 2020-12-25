@@ -58,6 +58,40 @@ static cv::Ptr<cv::aruco::Dictionary> MARKER_DICTIONARY = cv::aruco::getPredefin
     cv::Ptr<cv::aruco::Board> board = cv::aruco::Board::create(allMarkerCorners, MARKER_DICTIONARY, markerIds);
     return board;
 }
+
+- (aruco::MarkerMap) generateMarkerMap {
+    std::vector<int> markerIds;
+    std::vector<std::vector<cv::Point3f>> allMarkerCorners;
+    markerIds.reserve(_markers.allKeys.count);
+    allMarkerCorners.reserve(_markers.allKeys.count);
+    for (NSNumber* key in _markers) {
+        NSArray<NSArray<NSNumber*>*>* corners = [_markers objectForKey:key];
+        int marker_id = [key intValue];
+        markerIds.push_back(marker_id);
+        
+        std::vector<cv::Point3f> marker_corners;
+        marker_corners.reserve(4);
+        
+        for (NSArray<NSNumber*>* corner in corners) {
+            cv::Point3f point = cv::Point3f([corner[0] floatValue], [corner[1] floatValue], [corner[2] floatValue]);
+            marker_corners.push_back(point);
+        }
+        
+        allMarkerCorners.push_back(marker_corners);
+        
+    }
+    aruco::MarkerMap marker_map;
+    marker_map.mInfoType = aruco::MarkerMap::METERS;
+    marker_map.resize(allMarkerCorners.size());
+    for (int i = 0; i < allMarkerCorners.size(); i++) {
+        marker_map[i].id = markerIds[i];
+        for (auto corner : allMarkerCorners[i]) {
+            marker_map[i].push_back(corner);
+        }
+    }
+    return marker_map;
+}
+
 @end
 
 @implementation OpenCVWrapper
@@ -66,9 +100,11 @@ static cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorPa
 static std::vector<std::vector<cv::Point2f>> allCharucoCorners;
 static std::vector<std::vector<int>> allCharucoIds;
 static aruco::MarkerDetector detector;
+static aruco::CameraParameters* arucoCamParams = nullptr;
 
 static NSMutableArray<TrackerObj*>* _trackerObjects;
 static std::map<char, cv::Ptr<cv::aruco::Board>> trackerBoards;
+static std::map<char, aruco::MarkerMap> trackerMaps;
 static cv::Mat cameraMatrix, distCoeffs;
 
 + (void) initialize {
@@ -76,11 +112,8 @@ static cv::Mat cameraMatrix, distCoeffs;
     parameters.get()->cornerRefinementMethod = cv::aruco::CORNER_REFINE_SUBPIX;
     aruco::MarkerDetector::Params &params = detector.getParameters();
     params.setDetectionMode(aruco::DetectionMode::DM_FAST, 0);
-    params.setCornerRefinementMethod(aruco::CornerRefinementMethod::CORNER_NONE);
-    
-    
-    //parameters.get()->adaptiveThreshWinSizeMin = 23;
-    //parameters.get()->adaptiveThreshWinSizeMax = 23;
+    params.setCornerRefinementMethod(aruco::CornerRefinementMethod::CORNER_SUBPIX);
+    //params.setAutoSizeSpeedUp(true);
 }
 
 + (void) setDictionaryFromString: (NSString *) dictionary {
@@ -90,10 +123,6 @@ static cv::Mat cameraMatrix, distCoeffs;
     NSLog(@"dict size: %llu", dict.size());
     
     detector.setDictionary(dict);
-}
-
-+ (void) setWinSize: (int) winSize {
-    parameters.get()->cornerRefinementWinSize = winSize;
 }
 
 + (NSString *) openCVVersionString {
@@ -113,7 +142,9 @@ static cv::Mat cameraMatrix, distCoeffs;
         tracker.tracker_id = trackers.count + 1;
         [trackers addObject: tracker];
         cv::Ptr<cv::aruco::Board> board = [tracker generateBoard];
+        aruco::MarkerMap marker_map = [tracker generateMarkerMap];
         trackerBoards[tracker.tracker_id] = board;
+        trackerMaps[tracker.tracker_id] = marker_map;
     } else {
         // can't add more trackers
         return;
@@ -130,6 +161,7 @@ static cv::Mat cameraMatrix, distCoeffs;
     //double camMat[9] = {properties.fx,0,properties.cx,0,properties.fy,properties.cy,0,0,1};
     cameraMatrix = (cv::Mat1d(3,3) << properties.fx, 0, properties.cx, 0, properties.fy, properties.cy, 0, 0, 1);
     distCoeffs = (cv::Mat1d(1,5) << properties.distCoeffs[0], properties.distCoeffs[1], properties.distCoeffs[2], properties.distCoeffs[3], properties.distCoeffs[4]);
+    arucoCamParams = new aruco::CameraParameters(cameraMatrix, distCoeffs, cv::Size(1080, 1920));
 }
 
 + (void) setCameraRefine: (bool) refine {
@@ -139,8 +171,7 @@ static cv::Mat cameraMatrix, distCoeffs;
 + (CVImgOutput*) getMarkersFromBuffer: (CVImageBufferRef) buffer  {
     cv::Mat rgbMat = [OpenCVWrapper _rgbMatFrom:buffer];
     CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
-    aruco::CameraParameters params = aruco::CameraParameters(cameraMatrix, distCoeffs, cv::Size(1080, 1920));
-    std::vector<aruco::Marker> markers = detector.detect(rgbMat, params, 0.05);
+    std::vector<aruco::Marker> markers = detector.detect(rgbMat, *arucoCamParams, 0.05);
     CFAbsoluteTime end = CFAbsoluteTimeGetCurrent();
     double detectionTime = end - start;
     double fps = 1/detectionTime;
@@ -149,7 +180,7 @@ static cv::Mat cameraMatrix, distCoeffs;
         aruco::Marker marker = markers[i];
         marker.draw(rgbMat);
         
-        aruco::CvDrawingUtils::draw3dAxis(rgbMat,marker,params);
+        aruco::CvDrawingUtils::draw3dAxis(rgbMat,marker,*arucoCamParams);
     }
     
     char msString[32];
@@ -224,7 +255,7 @@ static cv::Mat cameraMatrix, distCoeffs;
     return output;
 }*/
 
-+ (TrackerResult*) getTrackersFromBuffer: (CVImageBufferRef) buffer  {
+/*+ (TrackerResult*) getTrackersFromBuffer: (CVImageBufferRef) buffer  {
     cv::Mat rgbMat = [OpenCVWrapper _rgbMatFrom:buffer];
     cv::Mat grayMat;
     cv::cvtColor(rgbMat, grayMat, cv::COLOR_BGRA2GRAY);
@@ -257,6 +288,58 @@ static cv::Mat cameraMatrix, distCoeffs;
                     cv::aruco::drawAxis(rgbMat, cameraMatrix, distCoeffs, rvec, tvec, 0.05);
                 }
                 
+            }
+            [locations addObject:location];
+        }
+    } else {
+        // set all locations to empty
+        for (TrackerObj* trackerobj in trackers) {
+            TrackerLocation* location = [[TrackerLocation alloc] init];
+            location.tracker_id = trackerobj.tracker_id;
+            location.visible = false;
+            [locations addObject:location];
+        }
+    }
+    
+    UIImage *outputImage = MatToUIImage(rgbMat);
+    result.outputImage = outputImage;
+    result.trackers = [locations copy];
+    return result;
+}*/
+
++ (TrackerResult*) getTrackersFromBuffer: (CVImageBufferRef) buffer  {
+    if (arucoCamParams == nullptr) return nil;
+    
+    cv::Mat rgbMat = [OpenCVWrapper _rgbMatFrom:buffer];
+    std::vector<aruco::Marker> markers;
+    detector.detect(rgbMat, markers, *arucoCamParams);
+    
+    TrackerResult* result = [[TrackerResult alloc] init];
+    NSMutableArray<TrackerLocation*>* locations = [[NSMutableArray alloc] init];
+    auto trackers = [OpenCVWrapper trackerObjects];
+    
+    if (markers.size() > 0) {
+        for (auto marker : markers) {
+            marker.draw(rgbMat);
+        }
+        
+        std::vector<cv::Vec3d> rvecs, tvecs;
+        for (TrackerObj* trackerobj in trackers) {
+            aruco::MarkerMap marker_map = trackerMaps[trackerobj.tracker_id];
+            TrackerLocation* location = [[TrackerLocation alloc] init];
+            location.tracker_id = trackerobj.tracker_id;
+            location.visible = false;
+            
+            aruco::MarkerMapPoseTracker MSPoseTracker;
+            MSPoseTracker.setParams(*arucoCamParams, marker_map);
+            if (MSPoseTracker.estimatePose(markers)) {
+                cv::Mat rvec, tvec;
+                rvec = MSPoseTracker.getRvec();
+                tvec = MSPoseTracker.getTvec();
+                location.visible = true;
+                location.rvec = {rvec.at<float>(0,0), rvec.at<float>(0,1), rvec.at<float>(0,2)};
+                location.tvec = {tvec.at<float>(0,0), tvec.at<float>(0,1), tvec.at<float>(0,2)};
+                aruco::CvDrawingUtils::draw3dAxis(rgbMat, *arucoCamParams, rvec, tvec, 0.05);
             }
             [locations addObject:location];
         }
@@ -336,7 +419,7 @@ static cv::Mat cameraMatrix, distCoeffs;
     cv::Mat imgMat(height, width, CV_8UC4, baseaddress, bytesPerRow);
     cv::Mat rgbMat;
     cvtColor(imgMat, rgbMat, cv::COLOR_BGRA2RGB);
-    //resize(rgbMat, rgbMat, cv::Size(), 0.25, 0.25, INTER_CUBIC);
+    //arucoCamParams->resize(cv::Size(width, height));
     CVPixelBufferUnlockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
     return rgbMat;
 }

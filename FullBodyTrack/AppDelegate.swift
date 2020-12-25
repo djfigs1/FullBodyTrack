@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        // Override point for customization after application launch.
+        /*// Override point for customization after application launch.
         let decoder = JSONDecoder()
         //let cameraProperties = try! decoder.decode(CodableCameraProperties.self, from: Data(cameraCalibString.utf8))
         if let path = Bundle.main.path(forResource: "cube_tracker", ofType: "json") {
@@ -61,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     addTracker(tracker)
                 }
             }
-        }
+        }*/
         
         SteamVRConnectionManager.shared.connect(host: "192.168.1.22", port: 8082)
         self.cameraSession.delegate = markerTracker

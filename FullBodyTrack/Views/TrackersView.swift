@@ -13,25 +13,32 @@ struct TrackersView: View {
     
     var body: some View {
         List(trackers) { tracker in
-            TrackerRow(tracker: tracker.tracker)
+            TrackerRow(unique: tracker).onTapGesture {
+                addTracker(tracker.tracker)
+                print ("Added tracker \(tracker.id)")
+            }
         }
     }
 }
 
 struct TrackerRow: View {
     
-    var tracker: Tracker
+    var unique: UniqueTracker
     
     var body: some View {
-        VStack {
-            Text(tracker.name).bold()
-            Text("\(tracker.markers.count) markers")
+        VStack (alignment: .leading, spacing: 0) {
+            Text(unique.tracker.name).bold()
+            Text(unique.active ? "Tracked" : "Not Tracked")
+            Text("\(unique.tracker.markers.count) markers")
         }
     }
 }
 
 struct TrackersView_Previews: PreviewProvider {
+    let empty_dict = Dictionary<Int, [[Float]]>()
     static var previews: some View {
-        TrackersView(trackers: [])
+        TrackersView(trackers: [
+            //UniqueTracker(id: "a", tracker: Tracker(name: "a", markers: empty_dict), active: false)
+        ])
     }
 }

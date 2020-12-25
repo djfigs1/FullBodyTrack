@@ -169,6 +169,7 @@ struct Tracker: Hashable, Codable {
 struct UniqueTracker: Identifiable {
     var id: String
     var tracker: Tracker
+    var active: Bool
 }
 
 func addTracker(_ tracker: Tracker) {
