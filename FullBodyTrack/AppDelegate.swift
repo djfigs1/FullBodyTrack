@@ -9,10 +9,6 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-    public let cameraSession = CameraSession()
-    public let markerTracker = MarkerTracker()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Initialize OpenCV
@@ -25,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     print ("Did find dict, setting...")
                     OpenCVWrapper.setDictionaryFrom(dict)
                 }
-                
             }
         }
         
@@ -35,40 +30,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Get Camera Calibration
         if let cameraCalibratrionProfiles = getCameraCalibrationProfiles() {
             if let props = cameraCalibratrionProfiles.first {
-                OpenCVWrapper.setCameraPropeties(props)
+                OpenCVWrapper.setCameraPropeties(codableCamPropsToObjC(codable: props))
                 print (props)
             }
         }
         
-        /*// Override point for customization after application launch.
-        let decoder = JSONDecoder()
-        //let cameraProperties = try! decoder.decode(CodableCameraProperties.self, from: Data(cameraCalibString.utf8))
-        if let path = Bundle.main.path(forResource: "cube_tracker", ofType: "json") {
-            print ("found path")
-            if let contentData = FileManager.default.contents(atPath: path) {
-                if let tracker = try? decoder.decode(Tracker.self, from: contentData) {
-                    print ("got tracker")
-                    addTracker(tracker)
-                }
+        // Start capture session
+        TrackerManager.shared.cameraSession.setUpAVCapture() { error in
+            guard let error = error else {
+                print ("AVCapture initialized!")
+                TrackerManager.shared.cameraSession.startCapturing()
+                return
             }
+            print ("Error initalizing AVCapture: \(error.localizedDescription)")
         }
         
-        if let path = Bundle.main.path(forResource: "calib_tracker", ofType: "json") {
-            print ("found path")
-            if let contentData = FileManager.default.contents(atPath: path) {
-                if let tracker = try? decoder.decode(Tracker.self, from: contentData) {
-                    print ("got tracker")
-                    addTracker(tracker)
-                }
-            }
-        }*/
-        
-        SteamVRConnectionManager.shared.connect(host: "192.168.1.22", port: 8082)
-        self.cameraSession.delegate = markerTracker
-        markerTracker.delegate = SteamVRConnectionManager.shared
-        SteamVRConnectionManager.shared.advertiseTrackers()
-        
-        print (OpenCVWrapper.openCVVersionString())
         return true
     }
     

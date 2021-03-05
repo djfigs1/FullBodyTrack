@@ -10,6 +10,7 @@
 		9A84AF2F5E8C8684611827FD /* Pods_FullBodyTrack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D2EEF881641C65970AE58DA /* Pods_FullBodyTrack.framework */; };
 		B004B5ED24F70DA900B71643 /* CameraControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = B004B5EC24F70DA900B71643 /* CameraControls.swift */; };
 		B0055D7C25197784006D036A /* big_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B0055D7B25197784006D036A /* big_tracker.json */; };
+		B00CB890259674A200454A24 /* TrackerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00CB88F259674A200454A24 /* TrackerManager.swift */; };
 		B04495DD24F61B4E0039438A /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B04495DC24F61B4E0039438A /* opencv2.framework */; };
 		B071E97C24FF1FFD0000F187 /* SteamVRConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071E97B24FF1FDE0000F187 /* SteamVRConnectionManager.swift */; };
 		B074C7652581C6A5002DE91B /* cube_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B074C7642581C6A5002DE91B /* cube_tracker.json */; };
@@ -56,6 +57,7 @@
 		B0B8461B24F8032D00105537 /* ring_tracker.json in Resources */ = {isa = PBXBuildFile; fileRef = B0B8461A24F8032D00105537 /* ring_tracker.json */; };
 		B0D5748D24DB65240057CDE1 /* CameraSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D5748C24DB65240057CDE1 /* CameraSessionManager.swift */; };
 		B0D5748F24DB6F0A0057CDE1 /* ArucoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D5748E24DB6F0A0057CDE1 /* ArucoManager.swift */; };
+		B0DA39422597E6E3009237AE /* SteamVRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0DA39412597E6E3009237AE /* SteamVRView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +98,7 @@
 		8D7520E183DB5813F5465BDD /* Pods-FullBodyTrack.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FullBodyTrack.debug.xcconfig"; path = "Target Support Files/Pods-FullBodyTrack/Pods-FullBodyTrack.debug.xcconfig"; sourceTree = "<group>"; };
 		B004B5EC24F70DA900B71643 /* CameraControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraControls.swift; sourceTree = "<group>"; };
 		B0055D7B25197784006D036A /* big_tracker.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = big_tracker.json; sourceTree = "<group>"; };
+		B00CB88F259674A200454A24 /* TrackerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerManager.swift; sourceTree = "<group>"; };
 		B04495DC24F61B4E0039438A /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		B071E97B24FF1FDE0000F187 /* SteamVRConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteamVRConnectionManager.swift; sourceTree = "<group>"; };
 		B074C7642581C6A5002DE91B /* cube_tracker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cube_tracker.json; sourceTree = "<group>"; };
@@ -476,6 +479,7 @@
 		B0B8461A24F8032D00105537 /* ring_tracker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ring_tracker.json; sourceTree = "<group>"; };
 		B0D5748C24DB65240057CDE1 /* CameraSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionManager.swift; sourceTree = "<group>"; };
 		B0D5748E24DB6F0A0057CDE1 /* ArucoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArucoManager.swift; sourceTree = "<group>"; };
+		B0DA39412597E6E3009237AE /* SteamVRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteamVRView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1223,11 +1227,13 @@
 		B0AE2DB125865993006225D6 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B004B5EC24F70DA900B71643 /* CameraControls.swift */,
 				B0AE2DB2258659A3006225D6 /* CameraView.swift */,
 				B0AE2DB425865B7A006225D6 /* SettingsView.swift */,
 				B0AE2DBE258671C0006225D6 /* TrackersView.swift */,
 				B0AE2DC025868FE2006225D6 /* CameraViewfinder.xib */,
 				B0AE2DC425869192006225D6 /* CameraViewfinder.swift */,
+				B0DA39412597E6E3009237AE /* SteamVRView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1266,7 +1272,6 @@
 				B0B5FCFC24DB102500843691 /* AppDelegate.swift */,
 				B0B5FCFE24DB102500843691 /* SceneDelegate.swift */,
 				B0B5FD0024DB102500843691 /* ContentView.swift */,
-				B004B5EC24F70DA900B71643 /* CameraControls.swift */,
 				B0B5FD0224DB102700843691 /* Assets.xcassets */,
 				B0B5FD0724DB102700843691 /* LaunchScreen.storyboard */,
 				B0B5FD0A24DB102700843691 /* Info.plist */,
@@ -1275,6 +1280,7 @@
 				B0D5748E24DB6F0A0057CDE1 /* ArucoManager.swift */,
 				B071E97B24FF1FDE0000F187 /* SteamVRConnectionManager.swift */,
 				B0AE2DBA25866E17006225D6 /* FileManager.swift */,
+				B00CB88F259674A200454A24 /* TrackerManager.swift */,
 			);
 			path = FullBodyTrack;
 			sourceTree = "<group>";
@@ -1467,6 +1473,7 @@
 				B0B5FCFF24DB102500843691 /* SceneDelegate.swift in Sources */,
 				B071E97C24FF1FFD0000F187 /* SteamVRConnectionManager.swift in Sources */,
 				B0AE2DB3258659A3006225D6 /* CameraView.swift in Sources */,
+				B00CB890259674A200454A24 /* TrackerManager.swift in Sources */,
 				B0B5FD1324DB110700843691 /* OpenCVWrapper.mm in Sources */,
 				B0AE2DB525865B7A006225D6 /* SettingsView.swift in Sources */,
 				B0B5FD0124DB102500843691 /* ContentView.swift in Sources */,
@@ -1476,6 +1483,7 @@
 				B0D5748F24DB6F0A0057CDE1 /* ArucoManager.swift in Sources */,
 				B0D5748D24DB65240057CDE1 /* CameraSessionManager.swift in Sources */,
 				B0AE2DC525869192006225D6 /* CameraViewfinder.swift in Sources */,
+				B0DA39422597E6E3009237AE /* SteamVRView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

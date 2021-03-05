@@ -707,6 +707,15 @@ int MarkerDetector_Impl::Otsu(std::vector<float> &hist){
     }
     return bestT;
 }
+
+bool checkMarkers(vector<Marker> & markers) {
+    for (auto &marker : markers) {
+        if (marker.id == -1) {
+            return true;
+        }
+    }
+    return false;
+}
 /************************************
      * Main detection function. Performs all steps
      ************************************/
@@ -738,7 +747,7 @@ void MarkerDetector_Impl::detect(const cv::Mat& input, vector<Marker>& detectedM
         if ( _params.lowResMarkerSize<minpixsize  ){
             ResizeFactor= float(_params.lowResMarkerSize)/float(minpixsize  ) ;
             if (ResizeFactor<0.9){//do not waste time if smaller than this
-                _debug_msg("Scale factor="<<ResizeFactor,1);
+                //_debug_msg("Scale factor="<<ResizeFactor,1);
                 maxImageSize.width=float(grey.cols)*ResizeFactor+0.5;
                 maxImageSize.height=float(grey.rows)*ResizeFactor+0.5;
                 if ( maxImageSize.width%2!=0) maxImageSize.width++;
@@ -867,7 +876,7 @@ void MarkerDetector_Impl::detect(const cv::Mat& input, vector<Marker>& detectedM
             {
                 detectedMarkers.push_back(MarkerCanditates[i]);
                 detectedMarkers.back().id = id;
-                detectedMarkers.back().dict_info=additionalInfo;
+                //detectedMarkers.back().dict_info=additionalInfo;
                 detectedMarkers.back().contourPoints=MarkerCanditates[i].contourPoints;
                 // sort the points so that they are always in the same order no matter the camera orientation
                 std::rotate(detectedMarkers.back().begin(),

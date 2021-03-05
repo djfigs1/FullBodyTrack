@@ -111,7 +111,6 @@ namespace aruco
                 //try a perfecf match
                 for(int rot=0;rot<4;rot++)
                     if ( dic->is( ids[rot])){
-                        //  std::cout<<"MATCH:"<<dic->getName()<<" "<<ids[rot]<<std::endl;
                         nRotations = rot;  // how many rotations are and its id
                         marker_id = dic->at (ids[rot]);
                         additionalInfo=dic->getName();

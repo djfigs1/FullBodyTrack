@@ -8,11 +8,12 @@
 import Foundation
 import Network
 
-class SteamVRConnectionManager: MarkerTrackerDelegate {
+class SteamVRConnectionManager: NSObject, ObservableObject {
+    
+    @Published var connected = false
     
     var connection:NWConnection?
-    static let shared = SteamVRConnectionManager()
-    var locationCache:Dictionary<Int8, TrackerLocation> = Dictionary<Int8, TrackerLocation>()
+    var networkedTrackers = Dictionary<String, Int8>()
    
     enum OPENVR_PACKET_TYPE: UInt8 {
         case HANDSHAKE = 0x00
@@ -36,25 +37,35 @@ class SteamVRConnectionManager: MarkerTrackerDelegate {
         guard let connection=connection else {return}
         var handshake_data = Data()
         handshake_data.append(OPENVR_PACKET_TYPE.HANDSHAKE.rawValue)
+        handshake_data.append(UIDevice.current.name.data(using: .ascii)!)
+        handshake_data.append(0x00)
         connection.send(content: handshake_data, completion: NWConnection.SendCompletion.contentProcessed(({ (err) in
+            DispatchQueue.main.async {
+                self.connected = true
+            }
+            
             print ("Handshake")
             guard let err=err else {return}
             print ("Error when handshaking: \(err.localizedDescription)")
         })))
+        
     }
     
-    func advertiseTrackers()
+    func advertiseTrackers(trackers: [TrackerManager.Tracker])
     {
         guard let connection=connection else {return}
-        let trackers = OpenCVWrapper.getAllTrackers()
+        
         var tracker_advertise_data = Data()
         tracker_advertise_data.append(OPENVR_PACKET_TYPE.ADVERTISE.rawValue)
+        var tracker_id: Int8 = 1
         for tracker in trackers {
-            tracker_advertise_data.append(UInt8(bitPattern: tracker.tracker_id))
-            tracker_advertise_data.append(tracker.serial.data(using: .ascii)!)
+            self.networkedTrackers[tracker.id] = tracker_id
+            tracker_advertise_data.append(UInt8(bitPattern: tracker_id))
+            tracker_advertise_data.append(tracker.id.data(using: .ascii)!)
             tracker_advertise_data.append(0x00)
+            tracker_id += 1
         }
-        
+
         connection.send(content: tracker_advertise_data, completion: NWConnection.SendCompletion.contentProcessed(({ (err) in
             print ("Did advertise")
             guard let err=err else {return}
@@ -63,25 +74,24 @@ class SteamVRConnectionManager: MarkerTrackerDelegate {
         
     }
 
-    func tracker(_ markerTracker: MarkerTracker, trackersWereUpdated trackers: [TrackerLocation]) {
+    func updateTrackers(trackerLocations: [TrackerLocation]) {
         guard let connection=connection else {return}
         var tracker_update_data = Data()
         tracker_update_data.append(OPENVR_PACKET_TYPE.UPDATE.rawValue)
-        for tracker in trackers {
-            var tracker_char = tracker.tracker_id
-            locationCache[tracker_char] = tracker
-            
-            // Negative tracker ids indicate that the tracker is not visible
-            tracker_char = tracker.visible ? tracker_char : -tracker_char
-            tracker_update_data.append(contentsOf: [UInt8(bitPattern: tracker_char)])
-            
-            var rvec = tracker.rvec
-            var tvec = tracker.tvec
-            
-            // Only append rvec/tvec if it's visible
-            if (tracker.visible) {
-                tracker_update_data.append(Data(bytes: &rvec, count: 24))
-                tracker_update_data.append(Data(bytes: &tvec, count: 24))
+        for tracker in trackerLocations {
+            if let tracker_char = self.networkedTrackers[tracker.tracker_id] {
+                // Negative tracker ids indicate that the tracker is not visible
+                let tracker_char_byte = tracker.visible ? tracker_char : -tracker_char
+                tracker_update_data.append(contentsOf: [UInt8(bitPattern: tracker_char_byte)])
+                
+                var rvec = tracker.rvec
+                var tvec = tracker.tvec
+                
+                // Only append rvec/tvec if it's visible
+                if (tracker.visible) {
+                    tracker_update_data.append(Data(bytes: &rvec, count: 24))
+                    tracker_update_data.append(Data(bytes: &tvec, count: 24))
+                }
             }
         }
         
@@ -91,25 +101,7 @@ class SteamVRConnectionManager: MarkerTrackerDelegate {
         })))
     }
     
-    func calibrateTracker(location: TrackerLocation, o_rvec: Vector3d, o_tvec: Vector3d) {
-        guard let connection=connection else {return}
-        if (!location.visible) {
-            return;
-        }
-        var to_rvec = o_rvec
-        var to_tvec = o_tvec
-        
-        var tracker_calibrate_data = Data()
-        tracker_calibrate_data.append(OPENVR_PACKET_TYPE.CALIBRATE.rawValue)
-        tracker_calibrate_data.append(Data(bytes: &location.rvec, count: 24))
-        tracker_calibrate_data.append(Data(bytes: &location.tvec, count: 24))
-        tracker_calibrate_data.append(Data(bytes: &to_rvec, count: 24))
-        tracker_calibrate_data.append(Data(bytes: &to_tvec, count: 24))
-        
-        connection.send(content: tracker_calibrate_data, completion: NWConnection.SendCompletion.contentProcessed(({ (err) in
-            guard let err=err else {return}
-            print ("Error when sending calibration data: \(err.localizedDescription)")
-        })))
+    func translateWorld(x: Double, y: Double, z: Double, pitch: Double, yaw: Double, roll: Double) {
         
     }
     

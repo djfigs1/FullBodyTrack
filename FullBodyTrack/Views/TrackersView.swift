@@ -9,36 +9,32 @@ import SwiftUI
 
 struct TrackersView: View {
     
-    var trackers: [UniqueTracker] = getTrackers() ?? []
+    @EnvironmentObject var trackerManager: TrackerManager
     
     var body: some View {
-        List(trackers) { tracker in
-            TrackerRow(unique: tracker).onTapGesture {
-                addTracker(tracker.tracker)
-                print ("Added tracker \(tracker.id)")
-            }
+        List(trackerManager.trackers) { tracker in
+            TrackerRow(tracker: tracker)
         }
     }
 }
 
 struct TrackerRow: View {
     
-    var unique: UniqueTracker
+    @ObservedObject var tracker: TrackerManager.Tracker
     
     var body: some View {
+        Image(systemName: "perspective")
         VStack (alignment: .leading, spacing: 0) {
-            Text(unique.tracker.name).bold()
-            Text(unique.active ? "Tracked" : "Not Tracked")
-            Text("\(unique.tracker.markers.count) markers")
+            Text(tracker.data.name).bold()
+            Text("\(tracker.data.markers.count) markers")
         }
+        Toggle("", isOn: $tracker.active).disabled(!tracker.canBeAdded && !tracker.active)
     }
 }
 
 struct TrackersView_Previews: PreviewProvider {
     let empty_dict = Dictionary<Int, [[Float]]>()
     static var previews: some View {
-        TrackersView(trackers: [
-            //UniqueTracker(id: "a", tracker: Tracker(name: "a", markers: empty_dict), active: false)
-        ])
+        TrackersView()
     }
 }

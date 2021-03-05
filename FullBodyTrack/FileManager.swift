@@ -47,8 +47,8 @@ func getCameraCalibrationProfiles() -> [CameraProperties]? {
             if (FileManager.default.fileExists(atPath: file.path, isDirectory: &isDirectory)) {
                 if (!isDirectory.boolValue) {
                     if (file.pathExtension == "json") {
-                        if let props = try? decoder.decode(CodableCameraProperties.self, from: Data(contentsOf: file)) {
-                            camera_properties.append(codableToCameraProperties(codable: props))
+                        if let props = try? decoder.decode(CameraProperties.self, from: Data(contentsOf: file)) {
+                            camera_properties.append(props)
                         }
                     }
                 }
@@ -61,28 +61,24 @@ func getCameraCalibrationProfiles() -> [CameraProperties]? {
     }
 }
 
-func getTrackers() -> [UniqueTracker]? {
+func getStoredTrackers() -> [(String, TrackerManager.TrackerData)]? {
     let filesURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     let trackersURL = filesURL.appendingPathComponent(TRACKERS_DIRECTORY)
     do {
         let trackerFiles = try FileManager.default.contentsOfDirectory(at: trackersURL, includingPropertiesForKeys: nil, options: [])
-        var trackers: [UniqueTracker] = []
+        var trackers: [(String, TrackerManager.TrackerData)] = []
         let decoder = JSONDecoder()
         for file in trackerFiles {
             var isDirectory = ObjCBool(false)
             if (FileManager.default.fileExists(atPath: file.path, isDirectory: &isDirectory)) {
                 if (!isDirectory.boolValue) {
                     if (file.pathExtension == "json") {
-                        if let tracker = try? decoder.decode(Tracker.self, from: Data(contentsOf: file)) {
-                            let uniqueTracker = UniqueTracker(id: file.lastPathComponent, tracker: tracker, active: false)
-                            trackers.append(uniqueTracker)
+                        if let tracker = try? decoder.decode(TrackerManager.TrackerData.self, from: Data(contentsOf: file)) {
+                            trackers.append((file.lastPathComponent, tracker))
                         }
                     }
                 }
             }
-        }
-        for tracker in trackers {
-            print (tracker.id)
         }
         return trackers
     } catch {
@@ -92,7 +88,6 @@ func getTrackers() -> [UniqueTracker]? {
 }
 
 func saveCameraCalibration(_ properties: CameraProperties) {
-    let camera = cameraPropertiesToCodable(properties: properties)
     let filesURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     let calibrationURL = filesURL.appendingPathComponent(CALIBRATION_DIRECTORY)
     let calibrationFileName = "calib-0.json"
@@ -102,7 +97,7 @@ func saveCameraCalibration(_ properties: CameraProperties) {
     }
     let json_encoder = JSONEncoder()
     do {
-        let json = try json_encoder.encode(camera)
+        let json = try json_encoder.encode(properties)
         try json.write(to: calibrationFileURL)
     } catch let error {
         print ("Error when saving camera calibration: \(error)")

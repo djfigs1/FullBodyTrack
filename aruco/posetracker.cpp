@@ -466,7 +466,7 @@ inline double getHubberMonoWeight(double SqErr,double Information){
               }
             //sort and get the best
             std::sort(all_marker_locations.begin(),all_marker_locations.end(),[](const minfo &a,const minfo &b){return a.err<b.err;});
-            std::cerr<<"err="<<all_marker_locations.front().err<<std::endl;
+            //std::cerr<<"err="<<all_marker_locations.front().err<<std::endl;
             auto &best=all_marker_locations.front();
             pose_f2g_out=best.rt_f2m *marker_m2g[best.id];
         }

@@ -10,11 +10,11 @@ import SwiftUI
 
 struct Viewfinder: UIViewRepresentable {
     
-    @EnvironmentObject var camSession: CameraSession
+    @EnvironmentObject var trackerManager: TrackerManager
     
     func makeUIView(context: Context) -> some UIView {
         let viewfinder = CameraViewfinder()
-        camSession.viewfinder = viewfinder
+        trackerManager.cameraSession.viewfinder = viewfinder
         return viewfinder
     }
     
@@ -24,16 +24,12 @@ struct Viewfinder: UIViewRepresentable {
 }
 
 struct CameraView: View {
-    @EnvironmentObject var camSession: CameraSession
+    @EnvironmentObject var trackerManager: TrackerManager
     
     var body: some View {
         VStack {
-            CameraControls().environmentObject(camSession.delegate as! MarkerTracker)
-//            let cameraImage = Image(uiImage: camSession.img ?? UIImage())
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
+            CameraControls()
             Viewfinder()
-            
         }
     }
 }
